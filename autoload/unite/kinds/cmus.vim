@@ -1,8 +1,17 @@
-" Modification : 2016-04-19
+" Modification : 2016-04-26
 
 " To avoid conflict problems {{{1
 let s:saveCpoptions = &cpoptions
 set cpoptions&vim
+" 1}}}
+
+" Helpers {{{1
+function! s:format_file_name(word) abort " {{{2
+	return matchstr(a:word, '.*\.\w*')
+endfunction
+function! s:cmus_remote(cmd, candidate) abort " {{{2
+		call system('cmus-remote -C ' . shellescape(a:cmd . ' ' . s:format_file_name(a:candidate)))
+endfunction " 2}}}
 " 1}}}
 
 " Define initial properties of the kind {{{1
@@ -29,16 +38,16 @@ let s:cmus_unite_kind.action_table = {
 			\ },
 		\ }
 function! s:cmus_unite_kind.action_table.play.func(candidate) abort " {{{2
-	call system('cmus-remote -C ' . shellescape('player-play ' .  a:candidate.word))
+	call s:cmus_remote('player-play', a:candidate.word)
 endfunction
 function! s:cmus_unite_kind.action_table.queue.func(candidate) abort " {{{2
 	for l:i in range(0, len(a:candidate) - 1)
-		call system('cmus-remote -C ' . shellescape('add -q ' .  a:candidate[l:i].word))
+		call s:cmus_remote('add -q', a:candidate[l:i].word)
 	endfor
 endfunction
 function! s:cmus_unite_kind.action_table.prepend2queue.func(candidate) abort " {{{2
 	for l:i in range(0, len(a:candidate) - 1)
-		call system('cmus-remote -C ' . shellescape('add -Q ' .  a:candidate[l:i].word))
+		call s:cmus_remote('add -Q', a:candidate[l:i].word)
 	endfor
 endfunction " 2}}}
 " 1}}}
