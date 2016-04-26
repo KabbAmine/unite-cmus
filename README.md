@@ -6,7 +6,7 @@
 Description
 -----------
 
-[Cmus](https://cmus.github.io/) source for [unite](https://github.com/shougo/unite.vim) to play & queue tracks :musical_note:
+[Cmus](https://cmus.github.io/) source for [unite](https://github.com/shougo/unite.vim) to play & queue tracks :musical_note:  
 
 ![Unite-cmus demo](.img/demo.gif "Demo of unite-cmus")
 
@@ -25,13 +25,37 @@ Plug 'KabbAmine/unite-cmus' | Plug 'Shougo/unite.vim'
 Usage
 -----
 
+### Sources
+
 ```vim
 :Unite cmus
 ```
 
+:musical_note: Search for paths and file names.  
+See the gif above.
+
+----------------------------------------
+
+```vim
+:Unite cmus/album
+```
+
+:musical_note: Search for paths, file names and albums.
+
+![Demo of cmus/album source](.img/cmus_album.png "Demo of cmus/album source")
+
+**Note:**
+
+- This source is quite slow to get candidates (Make it asynchronous in the future maybe).
+- Due to vim's limitations, the formatting of non-ASCII characters may be strange.
+
+![Case of non-ASCII characters](.img/non-ascii.png "Case of non-ASCII characters")
+
+### Actions
+
 | action          | description                                         |
 | -------------   | ------------------------                            |
-| `play`          | Play the selected track (Action by default)          |
+| `play`          | Play the selected track (Action by default)         |
 | `queue`         | Add the selected track(s) to the queue playlist     |
 | `prepend2queue` | Prepend the selected track(s) to the queue playlist |
 
@@ -52,7 +76,7 @@ if executable('cmus')
 				\ '-shuffle'   : 'S',
 			\ }
 
-	command! -nargs=? -bar -complete=custom,CompleteCmus Cmus :call <SID>Cmus('<args>')
+	command! -nargs=? -complete=custom,CompleteCmus Cmus :call <SID>Cmus('<args>')
 
 	function! <SID>Cmus(...) abort
 		let l:arg = exists('a:1') && !empty(get(s:cmusCmds, a:1)) ?
