@@ -1,4 +1,4 @@
-" Modification : 2016-04-26
+" Modification : 2016-05-17
 
 " To avoid conflict problems {{{1
 let s:saveCpoptions = &cpoptions
@@ -7,10 +7,11 @@ set cpoptions&vim
 
 " Helpers {{{1
 function! s:format_file_name(word) abort " {{{2
-	return matchstr(a:word, '.*\.\w*')
+	return a:word =~# ' .* \{5}.*' ?
+				\ matchstr(a:word, '.*\ze \{5}') : a:word
 endfunction
 function! s:cmus_remote(cmd, candidate) abort " {{{2
-		call system('cmus-remote -C ' . shellescape(a:cmd . ' ' . s:format_file_name(a:candidate)))
+	call system('cmus-remote -C ' . shellescape(a:cmd . ' ' . s:format_file_name(a:candidate)))
 endfunction " 2}}}
 " 1}}}
 
@@ -52,7 +53,7 @@ function! s:cmus_unite_kind.action_table.prepend2queue.func(candidate) abort " {
 endfunction " 2}}}
 " 1}}}
 
-" Define source {{{1
+" Define kind {{{1
 function! unite#kinds#cmus#define() abort
 	return s:cmus_unite_kind
 endfunction

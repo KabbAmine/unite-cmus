@@ -1,10 +1,17 @@
 " Unite source for Cmus
 " Creation     : 2016-04-17
-" Modification : 2016-04-26
+" Modification : 2016-05-04
 
 " To avoid conflict problems {{{1
 let s:saveCpoptions = &cpoptions
 set cpoptions&vim
+" 1}}}
+
+" Helpers {{{1
+function! s:get(type, word) abort " {{{2
+	return a:type ==# 'a' ?
+				\ matchstr(a:word, ' \{5}\zs.*') : matchstr(a:word, '.*\ze \{5}')
+endfunction " 2}}}
 " 1}}}
 
 " Make source {{{1
@@ -46,17 +53,17 @@ function! s:cmus_unite_source.gather_candidates(args, context) abort
 	endfor
 
 	let l:m = []
-	" Make the candidates: 'filename=album'
+	" Make each candidate: 'filename     album'
 	for l:t in range(0, len(l:src.files) - 1)
-		call add(l:m, l:src.files[l:t] . '=' . l:src.albums[l:t])
+		call add(l:m, l:src.files[l:t] . repeat(' ', 5) . l:src.albums[l:t])
 	endfor
 
 	return map(l:m, '{
-				\ "word"   : tr(v:val, "=", " "),
+				\ "word"   : v:val,
 				\ "abbr"   : (
-				\		fnamemodify(v:val, ":t:r") .
-				\		repeat(" ", 100 - strchars(fnamemodify(v:val, ":t:r"))) .
-				\		"[" . matchstr(v:val, "=.*")[1:] . "]"
+				\		fnamemodify(s:get("f", v:val), ":t:r") .
+				\		repeat(" ", 100 - strchars(fnamemodify(s:get("f", v:val), ":t:r"))) .
+				\		"[" . s:get("a", v:val) . "]"
 				\	),
 				\ "source" : "cmus",
 				\ "kind"   : "cmus"
