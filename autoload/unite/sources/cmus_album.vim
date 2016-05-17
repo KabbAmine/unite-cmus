@@ -11,6 +11,12 @@ set cpoptions&vim
 function! s:get(type, word) abort " {{{2
 	return a:type ==# 'a' ?
 				\ matchstr(a:word, ' \{5}\zs.*') : matchstr(a:word, '.*\ze \{5}')
+endfunction
+function! s:abbreviate(value) abort " {{{2
+	let l:name = fnamemodify(s:get("f", a:value), ":t:r")
+	let l:album = s:get("a", a:value)
+	let l:padding = repeat(" ", 100 - strchars(l:name))
+	return l:name . l:padding . "[" . l:album . "]"
 endfunction " 2}}}
 " 1}}}
 
@@ -72,11 +78,7 @@ function! s:cmus_unite_source.gather_candidates(args, context) abort
 
 	return map(l:m, '{
 				\ "word"   : v:val,
-				\ "abbr"   : (
-				\		fnamemodify(s:get("f", v:val), ":t:r") .
-				\		repeat(" ", 100 - strchars(fnamemodify(s:get("f", v:val), ":t:r"))) .
-				\		"[" . s:get("a", v:val) . "]"
-				\	),
+				\ "abbr"   : s:abbreviate(v:val),
 				\ "source" : "cmus",
 				\ "kind"   : "cmus"
 				\ }')
