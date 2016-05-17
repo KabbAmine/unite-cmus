@@ -1,6 +1,6 @@
 " Unite source for Cmus
 " Creation     : 2016-04-17
-" Modification : 2016-04-19
+" Modification : 2016-05-17
 
 " To avoid conflict problems {{{1
 let s:saveCpoptions = &cpoptions
@@ -19,12 +19,22 @@ let s:cmus_unite_source = {
 
 " Gather candidates {{{1
 function! s:cmus_unite_source.gather_candidates(args, context) abort
-	return map(systemlist('cmus-remote -C "save -l -"'), '{
-				\ "word"    : v:val,
-				\ "abbr"    : fnamemodify(v:val, ":t:r"),
-				\ "source"  : "cmus",
-				\ "kind"    : "cmus"
-			\ }')
+
+	let l:cacheFile = cmus#cache_dir() . '/cmus'
+
+	if !filereadable(l:cacheFile) || a:context.is_redraw
+		let l:m = systemlist('cmus-remote -C "save -l -"')
+		call writefile(l:m, l:cacheFile)
+	else
+		let l:m = readfile(l:cacheFile)
+	endif
+
+	return map(l:m, '{
+				\	"word"    : v:val,
+				\	"abbr"    : fnamemodify(v:val, ":t:r"),
+				\	"source"  : "cmus",
+				\	"kind"    : "cmus"
+				\ }')
 endfunction
 " 1}}}
 

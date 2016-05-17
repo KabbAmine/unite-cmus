@@ -1,6 +1,6 @@
 " Unite source for Cmus
 " Creation     : 2016-04-17
-" Modification : 2016-05-04
+" Modification : 2016-05-17
 
 " To avoid conflict problems {{{1
 let s:saveCpoptions = &cpoptions
@@ -26,37 +26,49 @@ let s:cmus_unite_source = {
 
 " Gather candidates {{{1
 function! s:cmus_unite_source.gather_candidates(args, context) abort
-	let l:src = {
-				\   'files'  : [],
-				\   'albums' : [],
-				\ }
-	let l:_ = system('cmus-remote -C "save -l -e -"')
 
-	let l:file_exists = 0
-	" Get filenames & albums
-	for l:l in split(l:_, "\n")
-		if l:l =~# '^file '
-			if !l:file_exists
-				call add(l:src.files, l:l[5:])
-				let l:file_exists = 1
-			else
-				" In case no album tag is found
-				call add(l:src.albums, '')
-				call add(l:src.files, l:l[5:])
+	let l:cacheFile = cmus#cache_dir() . '/cmus_album'
+
+	if !filereadable(l:cacheFile) || a:context.is_redraw
+
+		let l:src = {
+					\   'files'  : [],
+					\   'albums' : [],
+					\ }
+		let l:_ = system('cmus-remote -C "save -l -e -"')
+
+		let l:file_exists = 0
+		" Get filenames & albums
+		for l:l in split(l:_, "\n")
+			if l:l =~# '^file '
+				if !l:file_exists
+					call add(l:src.files, l:l[5:])
+					let l:file_exists = 1
+				else
+					" In case no album tag is found
+					call add(l:src.albums, '')
+					call add(l:src.files, l:l[5:])
+					let l:file_exists = 0
+				endif
+			endif
+			if l:l =~# '^tag album '
+				call add(l:src.albums, l:l[10:])
 				let l:file_exists = 0
 			endif
-		endif
-		if l:l =~# '^tag album '
-			call add(l:src.albums, l:l[10:])
-			let l:file_exists = 0
-		endif
-	endfor
+		endfor
 
-	let l:m = []
-	" Make each candidate: 'filename     album'
-	for l:t in range(0, len(l:src.files) - 1)
-		call add(l:m, l:src.files[l:t] . repeat(' ', 5) . l:src.albums[l:t])
-	endfor
+		let l:m = []
+		" Make each candidate: 'filename     album'
+		for l:t in range(0, len(l:src.files) - 1)
+			call add(l:m, l:src.files[l:t] . repeat(' ', 5) . l:src.albums[l:t])
+		endfor
+
+		call writefile(l:m, l:cacheFile)
+	else
+
+		let l:m = readfile(l:cacheFile)
+
+	endif
 
 	return map(l:m, '{
 				\ "word"   : v:val,
