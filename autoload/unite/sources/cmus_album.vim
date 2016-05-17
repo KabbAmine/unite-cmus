@@ -33,7 +33,8 @@ let s:cmus_unite_source = {
 " Gather candidates {{{1
 function! s:cmus_unite_source.gather_candidates(args, context) abort
 
-	let l:cacheFile = cmus#cache_dir() . '/cmus_album'
+	let l:cmus = cmus#get()
+	let l:cacheFile = l:cmus.cache_dir . '/cmus_album'
 
 	if !filereadable(l:cacheFile) || a:context.is_redraw
 
