@@ -6,7 +6,7 @@
 Description
 -----------
 
-[Cmus](https://cmus.github.io/) source for [unite](https://github.com/shougo/unite.vim) to play & queue tracks :musical_note:  
+[Cmus](https://cmus.github.io/) source for [unite](https://github.com/shougo/unite.vim) to play :musical_note: & queue tracks.
 
 ![Unite-cmus demo](.img/demo.gif "Demo of unite-cmus")
 
@@ -27,29 +27,35 @@ Usage
 
 ### Sources
 
-```vim
-:Unite cmus
+The plugin provides 2 sources: `cmus` and `cmus/album`.  
+Due to caching, the candidates are gathered very quickly except for the 1st time, (Depending of your music library).
+
+:musical_note: :musical_note: :musical_note: :musical_note: :musical_note: :musical_note:
+
+ ```vim
+ :Unite cmus
 ```
 
-:musical_note: Search for paths and file names.  
+Search for paths and file names.  
 See the gif above.
 
-----------------------------------------
+:musical_note: :musical_note: :musical_note: :musical_note: :musical_note: :musical_note:
 
-```vim
-:Unite cmus/album
+ ```vim
+ `:Unite cmus/album`
 ```
 
-:musical_note: Search for paths, file names and albums.
+Search for paths, file names and albums.
 
 ![Demo of cmus/album source](.img/cmus_album.png "Demo of cmus/album source")
 
-**Note:**
-
-- This source is quite slow to get candidates (Make it asynchronous in the future maybe).
-- Due to vim's limitations, the formatting of non-ASCII characters may be strange.
+**N.B:**
+- This source can be slow to get candidates the 1st time.
+- Due to vim's limitations, the formatting of non-ASCII characters may be strange (A PR is welcome).
 
 ![Case of non-ASCII characters](.img/non-ascii.png "Case of non-ASCII characters")
+
+:musical_note: :musical_note: :musical_note: :musical_note: :musical_note: :musical_note:
 
 ### Actions
 
@@ -58,6 +64,42 @@ See the gif above.
 | `play`          | Play the selected track (Action by default)         |
 | `queue`         | Add the selected track(s) to the queue playlist     |
 | `prepend2queue` | Prepend the selected track(s) to the queue playlist |
+
+Configuration
+-------------
+
+### Cache
+
+In `g:unite_cmus_cache_dir` you can specify a directory where the cache files wil be stored
+
+By default they are created in `g:unite_data_directory . '/cmus/'` (Which if using unite's default configuration expends to `$XDG_CACHE_HOME/unite/cmus/`).
+
+API (A very small one :tongue:)
+-------------------------------
+
+A global and unique function is provided to get some useful informations:
+
+```vim
+cmus#get()
+```
+
+It contains 2 properties & 1 method:
+
+- `cache_dir`  
+
+  Returns the cache directory.
+
+- `current`  
+
+  Returns a dictionnary containing informations about the the current played song: `{'artist': artist, 'title': title, 'album': album}`.
+
+- `statusline_str()`
+
+  Returns a nicely formatted string to use in a function for statusline: `♬  artist - title`  
+
+  This is what it looks like in my config (I show/hide it with a key mapping):
+
+  ![Current song in statusline](.img/cmus_statusline.png "Current song in statusline")
 
 Bonus
 -----
@@ -98,7 +140,7 @@ Then you'll have access to the command `:Cmus` (Use `-pause` when no argument is
 ## Notes
 
 Thanks to Bram Moolenaar for creating the best piece of software in the world :heart:  
-Thanks to @Shougo for the wonderful unite.  
+Thanks to @shougo for the wonderful unite.  
 Thanks to you if you're using unite-cmus.
 
 ## License
